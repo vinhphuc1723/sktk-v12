@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#c8102e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SKTK V12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Ứng dụng quản lý Phòng Sân Khấu Tạp Kỹ - Ban Văn Nghệ VTV">
+<title>SKTK V12 – P. Sân Khấu Tạp Kỹ</title>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Apple Touch Icons -->
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+
+<!-- SheetJS for Excel export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+/* ============================================================
+   SKTK V12 – COMPLETE STYLESHEET
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;overflow:hidden}
+body{
+  font-family:'Segoe UI',Arial,sans-serif;
+  background:#f4f5f7;color:#222;
+  height:100%;overflow:hidden;
+  display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── CSS VARIABLES ── */
+:root{
+  --red:#c8102e;--red-dark:#9b0c22;--red-light:#e8254a;
+  --blue-dark:#1a3a6b;--blue:#1e4d8c;
+  --green:#2e7d32;--purple:#7b1fa2;--orange:#e65100;
+  --gray-bg:#f4f5f7;--white:#fff;
+  --sidebar-w:220px;--header-h:60px;
+  --shadow:0 2px 8px rgba(0,0,0,.12);
+  --radius:10px;--radius-sm:6px;
+}
+
+/* ── SCREEN MANAGEMENT ── */
+.screen{display:none;flex-direction:column;height:100%;overflow:hidden}
+.screen.active{display:flex}
+
+/* ============================================================
+   LOGIN SCREEN
+   ============================================================ */
+#screen-login{
+  background:linear-gradient(160deg,var(--red-dark) 0%,var(--red) 45%,#e63950 100%);
+  align-items:center;justify-content:center;padding:20px;
+}
+.login-card{
+  background:#fff;border-radius:20px;
+  padding:36px 32px;width:100%;max-width:400px;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+}
+.login-logo-wrap{text-align:center;margin-bottom:28px}
+.login-logo-svg{width:200px;height:auto;margin:0 auto 12px;display:block}
+.login-title{font-size:14px;color:#666;text-align:center;line-height:1.5}
+.login-form-group{margin-bottom:16px}
+.login-label{display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.login-input{
+  width:100%;border:2px solid #e0e0e0;border-radius:10px;
+  padding:12px 16px;font-size:15px;outline:none;
+  transition:.2s;font-family:inherit;color:#222;
+}
+.login-input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(200,16,46,.1)}
+.login-role-select{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px
+}
+.role-option{
+  border:2px solid #e0e0e0;border-radius:10px;padding:10px;
+  text-align:center;cursor:pointer;transition:.2s;
+}
+.role-option.selected{border-color:var(--red);background:#fff5f5}
+.role-icon{font-size:22px;display:block;margin-bottom:4px}
+.role-name{font-size:11px;font-weight:700;color:#555}
+.btn-login{
+  width:100%;background:linear-gradient(135deg,var(--red-dark),var(--red));
+  color:#fff;border:none;border-radius:12px;padding:14px;
+  font-size:16px;font-weight:700;cursor:pointer;transition:.2s;
+  letter-spacing:.5px;
+}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(200,16,46,.4)}
+.btn-login:active{transform:translateY(0)}
+.login-footer{text-align:center;font-size:11px;color:#aaa;margin-top:20px}
+
+/* ============================================================
+   MAIN APP SCREEN
+   ============================================================ */
+#screen-app{display:none;flex-direction:column;height:100%;overflow:hidden}
+#screen-app.active{display:flex}
+
+/* ── HEADER ── */
+#app-header{
+  height:var(--header-h);flex-shrink:0;
+  background:linear-gradient(135deg,var(--red-dark) 0%,var(--red) 55%,var(--red-light) 100%);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;box-shadow:0 3px 12px rgba(0,0,0,.25);z-index:100;
+}
+.header-left{display:flex;align-items:center;gap:10px}
+.header-logo-box{
+  background:#fff;border-radius:8px;padding:4px 10px;
+  border:2px solid rgba(255,255,255,.5);
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+}
+.vtv-logo-mini{
+  background:linear-gradient(135deg,#1e4d8c 40%,#c8102e 100%);
+  border-radius:5px;padding:3px 7px;
+}
+.vtv-logo-mini span{color:#fff;font-weight:900;font-size:14px;font-style:italic}
+.vtv-logo-mini .v1{color:#e8254a}.vtv-logo-mini .v2{color:#2db34a}
+.header-deptname{line-height:1.2}
+.header-deptname .l1{font-size:10px;font-weight:800;color:var(--red-dark);letter-spacing:.3px}
+.header-deptname .l2{font-size:9px;font-weight:600;color:var(--blue-dark)}
+.header-app-title{color:rgba(255,255,255,.9);font-size:15px;font-weight:700;letter-spacing:.3px}
+@media(max-width:480px){.header-app-title{display:none}}
+.header-right{display:flex;align-items:center;gap:8px}
+.header-username{color:#fff;font-size:12px;text-align:right;line-height:1.3}
+.header-username strong{display:block;font-size:13px}
+.header-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;color:#fff;font-size:13px;cursor:pointer;flex-shrink:0;
+}
+.btn-logout-header{
+  background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);
+  color:#fff;padding:5px 11px;border-radius:16px;
+  font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;
+  transition:.2s;
+}
+.btn-logout-header:hover{background:rgba(255,255,255,.3)}
+
+/* ── APP BODY ── */
+#app-body{display:flex;flex:1;overflow:hidden}
+
+/* ── SIDEBAR ── */
+#sidebar{
+  width:var(--sidebar-w);background:#fff;flex-shrink:0;
+  box-shadow:2px 0 8px rgba(0,0,0,.08);
+  display:flex;flex-direction:column;overflow-y:auto;
+  transition:transform .3s;z-index:50;
+}
+@media(max-width:768px){
+  #sidebar{
+    position:fixed;top:var(--header-h);bottom:0;left:0;
+    transform:translateX(-100%);z-index:90;
+  }
+  #sidebar.open{transform:translateX(0)}
+  #sidebar-overlay{
+    display:none;position:fixed;inset:0;top:var(--header-h);
+    background:rgba(0,0,0,.4);z-index:89;
+  }
+  #sidebar-overlay.open{display:block}
+}
+.sidebar-brand{
+  padding:14px 16px;border-bottom:1px solid #f0f0f0;
+  background:linear-gradient(135deg,#fafafa,#fff);flex-shrink:0;
+}
+.brand-ribbon{
+  background:linear-gradient(135deg,var(--blue-dark),var(--blue));
+  border-radius:8px;padding:8px 12px;color:#fff;text-align:center;
+}
+.brand-ribbon .r1{font-size:12px;font-weight:800;letter-spacing:.5px}
+.brand-ribbon .r2{font-size:10px;font-weight:600;color:#ffd700;margin-top:2px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 16px;cursor:pointer;
+  border-left:4px solid transparent;transition:.15s;
+  font-size:13px;font-weight:600;color:#555;user-select:none;
+}
+.nav-item:hover{background:#f8f9fa}
+.nav-item.active{background:#fff5f5;border-left-color:var(--red);color:#222}
+.nav-icon{
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.n-home .nav-icon{background:#fff0f0}
+.n-att .nav-icon{background:#e8f5e9}
+.n-hist .nav-icon{background:#e3f2fd}
+.n-sched .nav-icon{background:#fce4ec}
+.n-union .nav-icon{background:#f3e5f5}
+.n-notif .nav-icon{background:#fff3e0}
+.nav-badge{background:var(--red);color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 7px;margin-left:auto}
+
+/* ── MAIN CONTENT ── */
+#main-content{flex:1;overflow-y:auto;padding:16px;background:var(--gray-bg)}
+@media(max-width:768px){#main-content{padding:12px 10px 80px}}
+
+/* ── PAGE CARDS ── */
+.page{display:none}
+.page.active{display:block}
+.page-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;min-height:500px}
+.page-hdr{
+  padding:14px 20px;color:#fff;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+.page-hdr h2{font-size:17px;font-weight:700}
+.page-hdr .page-date{font-size:11px;opacity:.8;margin-top:2px}
+.hdr-red{background:linear-gradient(135deg,var(--red-dark),var(--red))}
+.hdr-green{background:linear-gradient(135deg,#1b5e20,#2e7d32)}
+.hdr-blue{background:linear-gradient(135deg,#0d47a1,#1565c0)}
+.hdr-pink{background:linear-gradient(135deg,#880e4f,#c2185b)}
+.hdr-purple{background:linear-gradient(135deg,#4a148c,#7b1fa2)}
+.hdr-orange{background:linear-gradient(135deg,#bf360c,#e65100)}
+
+/* ── SUB TABS ── */
+.sub-tabs{display:flex;border-bottom:2px solid #f0f0f0;background:#fafafa;overflow-x:auto;flex-shrink:0}
+.sub-tabs::-webkit-scrollbar{height:3px}
+.sub-tab{
+  padding:10px 16px;font-size:12px;font-weight:700;cursor:pointer;
+  color:#888;border-bottom:3px solid transparent;white-space:nowrap;transition:.15s;flex-shrink:0;
+}
+.sub-tab.active{color:var(--red);border-bottom-color:var(--red);background:#fff}
+.sub-tab:hover:not(.active){color:#555}
+.tab-pane{padding:16px;display:none}
+.tab-pane.active{display:block}
+
+/* ── COMMON COMPONENTS ── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:.15s;font-family:inherit;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red-dark)}
+.btn-green{background:#2e7d32;color:#fff}.btn-green:hover{background:#1b5e20}
+.btn-blue{background:#1565c0;color:#fff}.btn-blue:hover{background:#0d47a1}
+.btn-orange{background:#e65100;color:#fff}.btn-orange:hover{background:#bf360c}
+.btn-gray{background:#eee;color:#333}.btn-gray:hover{background:#ddd}
+.btn-danger{background:#c62828;color:#fff}.btn-danger:hover{background:#b71c1c}
+.btn-sm{padding:5px 10px;font-size:11px;border-radius:6px}
+.btn-xs{padding:3px 8px;font-size:10px;border-radius:5px}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+.export-bar{
+  display:flex;gap:6px;flex-wrap:wrap;align-items:center;
+  margin-bottom:12px;padding:8px 12px;
+  background:#f0f4f8;border-radius:8px;border:1px solid #d4e0ef;
+  font-size:11px;font-weight:700;color:#555;
+}
+.export-bar span{margin-right:4px}
+
+.filter-bar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:14px;padding:10px 14px;
+  background:#f8f8f8;border-radius:var(--radius-sm);border:1px solid #eee;
+}
+.filter-label{font-size:12px;font-weight:700;color:#666}
+.period-grp{display:flex;gap:4px}
+.period-btn{
+  padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;
+  cursor:pointer;border:1.5px solid #ddd;background:#fff;color:#666;transition:.15s;
+}
+.period-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{
+  padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;
+  cursor:pointer;border:1.5px solid #ddd;background:#fff;color:#666;transition:.15s;
+}
+.chip.active{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* ── FORM ── */
+.form-section{background:#f9f9f9;border-radius:var(--radius);padding:16px;margin-bottom:16px;border:1px solid #eee}
+.form-section-title{font-size:13px;font-weight:800;color:var(--red-dark);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:12px}
+.form-row.full{grid-template-columns:1fr}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.3px}
+.form-control{
+  border:1.5px solid #ddd;border-radius:8px;
+  padding:9px 12px;font-size:13px;outline:none;transition:.2s;
+  font-family:inherit;color:#222;background:#fff;width:100%;
+}
+.form-control:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(200,16,46,.1)}
+textarea.form-control{resize:vertical;min-height:80px}
+
+/* ── STATS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.stat-card{border-radius:var(--radius-sm);padding:14px;border-left:4px solid;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.stat-card.s-green{border-color:#2e7d32}.stat-card.s-red{border-color:#c62828}
+.stat-card.s-blue{border-color:#1565c0}.stat-card.s-orange{border-color:#e65100}
+.stat-card.s-purple{border-color:#7b1fa2}
+.stat-lbl{font-size:10px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.stat-val{font-size:22px;font-weight:900;line-height:1}
+.s-green .stat-val{color:#2e7d32}.s-red .stat-val{color:#c62828}
+.s-blue .stat-val{color:#1565c0}.s-orange .stat-val{color:#e65100}
+.s-purple .stat-val{color:#7b1fa2}
+
+/* ── TABLES ── */
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid #eee}
+.data-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:400px}
+.data-tbl th{
+  background:linear-gradient(135deg,var(--red-dark),var(--red));
+  color:#fff;padding:9px 12px;text-align:left;font-size:11px;font-weight:700;
+  white-space:nowrap;position:sticky;top:0;
+}
+.data-tbl td{padding:8px 12px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+.data-tbl tr:hover td{background:#fff8f8}
+.data-tbl .num{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.data-tbl tfoot tr td{background:#fff5f5;font-weight:800;border-top:2px solid var(--red);color:var(--red-dark)}
+.c-green{color:#2e7d32}.c-red{color:#c62828}.c-blue{color:#1565c0}.c-orange{color:#e65100}
+
+/* ── STATUS BADGES ── */
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800;white-space:nowrap}
+.badge-green{background:#e8f5e9;color:#1b5e20}
+.badge-red{background:#ffebee;color:#b71c1c}
+.badge-orange{background:#fff3e0;color:#e65100}
+.badge-blue{background:#e3f2fd;color:#0d47a1}
+.badge-purple{background:#f3e5f5;color:#4a148c}
+
+/* ── ATTENDANCE CARDS ── */
+.att-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.att-card{
+  background:#fff;border-radius:var(--radius-sm);padding:12px;
+  border:1px solid #eee;display:flex;align-items:center;gap:10px;
+  transition:.15s;cursor:pointer;
+}
+.att-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.1);border-color:#ddd}
+.att-av{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:14px;color:#fff;flex-shrink:0;
+}
+.att-info{flex:1;min-width:0}
+.att-name{font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.att-role{font-size:10px;color:#999}
+.att-check-btn{
+  width:26px;height:26px;border-radius:50%;border:2px solid #ddd;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:.15s;flex-shrink:0;font-size:12px;
+}
+.att-check-btn.on{background:#2e7d32;border-color:#2e7d32;color:#fff}
+.att-check-btn.late{background:#e65100;border-color:#e65100;color:#fff}
+
+/* ── PERSONNEL CARDS ── */
+.person-card{
+  background:#fff;border-radius:var(--radius-sm);padding:14px;
+  border:1px solid #eee;display:flex;gap:12px;margin-bottom:10px;transition:.15s;
+}
+.person-card:hover{box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.person-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#fff;flex-shrink:0}
+.person-details{flex:1;min-width:0}
+.person-name{font-size:14px;font-weight:800;color:#222}
+.person-role-tag{font-size:11px;color:var(--red);font-weight:700;margin-bottom:6px}
+.person-tags{display:flex;flex-wrap:wrap;gap:5px}
+.person-tag{font-size:10px;color:#666;background:#f5f5f5;padding:2px 8px;border-radius:10px}
+.person-acts{display:flex;flex-direction:column;gap:5px;justify-content:center}
+
+/* ── PHOTO ALBUM ── */
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.photo-item{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:4/3;background:#e8e8e8;cursor:pointer;border:2px solid transparent;transition:.2s}
+.photo-item:hover{border-color:var(--red);transform:scale(1.02)}
+.photo-item.sel{border-color:var(--red);box-shadow:0 0 0 3px rgba(200,16,46,.25)}
+.photo-item img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-overlay{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);padding:5px;display:flex;gap:4px;justify-content:center;opacity:0;transition:.2s}
+.photo-item:hover .photo-overlay{opacity:1}
+.po-btn{background:rgba(255,255,255,.15);border:none;color:#fff;padding:3px 7px;border-radius:4px;font-size:10px;cursor:pointer;font-weight:700}
+.po-btn:hover{background:rgba(255,255,255,.35)}
+.upload-zone{
+  border:2px dashed #ccc;border-radius:var(--radius);padding:28px;
+  text-align:center;cursor:pointer;transition:.2s;background:#fafafa;
+  aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.upload-zone:hover{border-color:var(--red);background:#fff5f5}
+.upload-icon{font-size:30px;margin-bottom:6px;opacity:.5}
+.upload-text{font-size:12px;color:#999}
+.upload-text strong{color:var(--red)}
+
+/* ── NOTIFICATION ── */
+.notif-item{
+  display:flex;gap:12px;padding:12px;border-radius:8px;
+  margin-bottom:8px;border:1px solid #eee;background:#fff;
+  cursor:pointer;transition:.15s;
+}
+.notif-item:hover{background:#fff8f8;border-color:#fcc}
+.notif-item.unread{background:#fff8f8;border-color:#fdd}
+.notif-icon{width:38px;height:38px;border-radius:50%;background:#fff0f0;color:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px}
+.notif-body{flex:1;min-width:0}
+.notif-title{font-size:13px;font-weight:800;color:#222;margin-bottom:3px}
+.notif-desc{font-size:12px;color:#666;line-height:1.5}
+.notif-time{font-size:10px;color:#aaa;margin-top:4px}
+.notif-dot{width:8px;height:8px;background:var(--red);border-radius:50%;margin-top:5px;flex-shrink:0}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;
+  display:none;align-items:center;justify-content:center;padding:16px;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:#fff;border-radius:14px;max-width:95vw;
+  max-height:90vh;overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+.modal-hdr{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 16px;background:var(--red);color:#fff;flex-shrink:0;
+}
+.modal-hdr h3{font-size:14px;font-weight:700}
+.modal-close{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;padding:0 4px}
+.modal-body{flex:1;overflow:auto;padding:16px}
+
+/* ── IMAGE EDITOR MODAL ── */
+.editor-toolbar{display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:#f5f5f5;border-bottom:1px solid #eee}
+.editor-canvas-area{background:#1a1a1a;display:flex;align-items:center;justify-content:center;min-height:280px;overflow:hidden;position:relative}
+.editor-canvas-area canvas{max-width:100%;max-height:350px;display:block}
+.editor-controls{display:flex;flex-wrap:wrap;gap:10px;padding:10px;background:#fafafa;border-top:1px solid #eee;align-items:center}
+.slider-group{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#555}
+.slider-group input{width:90px}
+
+/* ── MOBILE BOTTOM NAV ── */
+#mobile-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #e0e0e0;
+  box-shadow:0 -2px 10px rgba(0,0,0,.1);z-index:200;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.mn-items{display:flex}
+.mn-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:8px 2px;cursor:pointer;color:#aaa;transition:.15s;
+  font-size:9px;font-weight:700;gap:3px;border:none;background:none;
+  font-family:inherit;
+}
+.mn-item.active{color:var(--red)}
+.mn-icon{font-size:19px;line-height:1}
+@media(max-width:768px){
+  #mobile-nav{display:block}
+  #main-content{padding-bottom:80px}
+}
+
+/* ── HAMBURGER ── */
+#hamburger{
+  display:none;background:rgba(255,255,255,.15);border:none;
+  color:#fff;width:36px;height:36px;border-radius:8px;
+  font-size:18px;cursor:pointer;align-items:center;justify-content:center;
+}
+@media(max-width:768px){#hamburger{display:flex}}
+
+/* ── TOAST ── */
+#toast-wrap{position:fixed;top:74px;right:14px;z-index:600;display:flex;flex-direction:column;gap:7px;pointer-events:none;max-width:280px}
+.toast{
+  background:var(--red);color:#fff;padding:10px 16px;
+  border-radius:10px;font-size:12px;font-weight:700;
+  box-shadow:0 4px 16px rgba(0,0,0,.25);
+  animation:tIn .3s ease;line-height:1.4;
+}
+.toast.ok{background:#2e7d32}.toast.info{background:#1565c0}.toast.warn{background:#e65100}
+@keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── INSTALL BANNER ── */
+#install-banner{
+  display:none;position:fixed;bottom:70px;left:50%;transform:translateX(-50%);
+  background:var(--blue-dark);color:#fff;border-radius:12px;
+  padding:12px 20px;box-shadow:0 8px 24px rgba(0,0,0,.3);
+  z-index:300;align-items:center;gap:12px;max-width:340px;width:90%;
+}
+#install-banner.show{display:flex}
+#install-banner p{font-size:12px;line-height:1.5;flex:1}
+#install-banner strong{display:block;font-size:13px;margin-bottom:3px}
+.btn-install{background:var(--red);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-dismiss{background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;padding:8px;font-size:16px;cursor:pointer}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SCREEN 1: LOGIN
+     ============================================================ -->
+<div id="screen-login" class="screen active">
+  <div class="login-card">
+    <div class="login-logo-wrap">
+      <!-- Ribbon Logo Style -->
+      <svg class="login-logo-svg" viewBox="0 0 260 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1a3a6b"/>
+            <stop offset="100%" stop-color="#1e4d8c"/>
+          </linearGradient>
+          <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#9b0c22"/>
+            <stop offset="100%" stop-color="#c8102e"/>
+          </linearGradient>
+        </defs>
+        <!-- Blue ribbon top -->
+        <polygon points="10,10 230,10 240,35 220,35 10,35" fill="url(#g1)"/>
+        <!-- Red ribbon bottom -->
+        <polygon points="20,38 250,38 260,65 240,65 20,65" fill="url(#g2)"/>
+        <!-- VTV box -->
+        <rect x="8" y="8" width="44" height="60" rx="4" fill="white"/>
+        <rect x="10" y="10" width="40" height="56" rx="3" fill="#1e4d8c"/>
+        <text x="30" y="44" text-anchor="middle" font-size="14" font-weight="900" font-style="italic" fill="white" font-family="Arial">
+          <tspan fill="#e8254a">v</tspan><tspan fill="white">t</tspan><tspan fill="#2db34a">v</tspan>
+        </text>
+        <!-- Ban Van Nghe -->
+        <text x="145" y="28" text-anchor="middle" font-size="12" font-weight="900" fill="white" font-family="Arial" letter-spacing="1">BAN VĂN NGHỆ</text>
+        <!-- San Khau Tap Ky -->
+        <text x="150" y="56" text-anchor="middle" font-size="11" font-weight="900" fill="white" font-family="Arial" letter-spacing=".5">P. SÂN KHẤU TẠP KỸ</text>
+      </svg>
+      <div class="login-title">Hệ thống quản lý nội bộ<br>Ban Văn Nghệ – Đài Truyền hình Việt Nam</div>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div class="login-label">Chọn vai trò</div>
+      <div class="login-role-select" id="roleSelect">
+        <div class="role-option selected" data-role="lanhdao" onclick="selectRole(this)">
+          <span class="role-icon">👑</span>
+          <span class="role-name">Lãnh đạo</span>
+        </div>
+        <div class="role-option" data-role="trolý" onclick="selectRole(this)">
+          <span class="role-icon">🛡️</span>
+          <span class="role-name">Trợ lý</span>
+        </div>
+        <div class="role-option" data-role="nhanvien" onclick="selectRole(this)">
+          <span class="role-icon">👤</span>
+          <span class="role-name">Nhân viên</span>
+        </div>
+        <div class="role-option" data-role="admin" onclick="selectRole(this)">
+          <span class="role-icon">⚙️</span>
+          <span class="role-name">Admin</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-form-group">
+      <label class="login-label">Tên đăng nhập</label>
+      <input class="login-input" id="loginUser" type="text" placeholder="Nhập tên đăng nhập..." value="DanhTung">
+    </div>
+    <div class="login-form-group">
+      <label class="login-label">Mật khẩu</label>
+      <input class="login-input" id="loginPass" type="password" placeholder="Nhập mật khẩu..." value="123456">
+    </div>
+    <button class="btn-login" onclick="doLogin()">🔐 ĐĂNG NHẬP</button>
+    <div class="login-footer">SKTK V12 © 2026 Ban Văn Nghệ – VTV<br>Phiên bản 12.0 | Hỗ trợ iOS · Android · Windows</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 2: MAIN APP
+     ============================================================ -->
+<div id="screen-app" class="screen">
+
+  <!-- HEADER -->
+  <header id="app-header">
+    <div class="header-left">
+      <button id="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="header-logo-box" onclick="showPage('home')">
+        <div class="vtv-logo-mini">
+          <span><span class="v1">v</span>t<span class="v2">v</span></span>
+        </div>
+        <div class="header-deptname">
+          <div class="l1">BAN VĂN NGHỆ</div>
+          <div class="l2">P. SÂN KHẤU TẠP KỸ</div>
+        </div>
+      </div>
+      <span class="header-app-title">SKTK V12</span>
+    </div>
+    <div class="header-right">
+      <div class="header-username">
+        <strong id="hdr-name">Mc Danh Tung</strong>
+        <span id="hdr-role">Lãnh đạo phòng</span>
+      </div>
+      <div class="header-avatar" id="hdr-avatar">DT</div>
+      <button class="btn-logout-header" onclick="confirmLogout()">⏻ Đăng xuất</button>
+    </div>
+  </header>
+
+  <div id="app-body">
+    <!-- Sidebar overlay for mobile -->
+    <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <nav id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-ribbon">
+          <div class="r1">BAN VĂN NGHỆ</div>
+          <div class="r2">P. SÂN KHẤU TẠP KỸ</div>
+        </div>
+      </div>
+      <div class="nav-item n-home active" id="nav-home" onclick="showPage('home');closeSidebar()">
+        <div class="nav-icon">🏠</div><span>TRANG CHỦ</span>
+      </div>
+      <div class="nav-item n-att" id="nav-att" onclick="showPage('att');closeSidebar()">
+        <div class="nav-icon">✅</div><span>ĐIỂM DANH</span>
+      </div>
+      <div class="nav-item n-hist" id="nav-hist" onclick="showPage('hist');closeSidebar()">
+        <div class="nav-icon">📋</div><span>LỊCH SỬ CỦA TÔI</span>
+      </div>
+      <div class="nav-item n-sched" id="nav-sched" onclick="showPage('sched');closeSidebar()">
+        <div class="nav-icon">📺</div><span>LỊCH SX & PHÁT SÓNG</span>
+      </div>
+      <div class="nav-item n-union" id="nav-union" onclick="showPage('union');closeSidebar()">
+        <div class="nav-icon">💼</div><span>CÔNG ĐOÀN PHÒNG</span>
+      </div>
+      <div class="nav-item n-notif" id="nav-notif" onclick="showPage('notif');closeSidebar()">
+        <div class="nav-icon">🔔</div><span>QUẢN LÝ THÔNG BÁO</span>
+        <span class="nav-badge" id="notif-count">3</span>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content">
+
+      <!-- ====================================================
+           PAGE: TRANG CHỦ
+           ==================================================== -->
+      <div id="page-home" class="page active">
+        <div class="page-card">
+          <div class="page-hdr hdr-red">
+            <div><h2>🏠 TRANG CHỦ</h2><div class="page-date" id="date-home"></div></div>
+          </div>
+          <div class="sub-tabs">
+            <div class="sub-tab active" onclick="subTab('home','info',this)">THÔNG TIN PHÒNG</div>
+            <div class="sub-tab" onclick="subTab('home','nhansu',this)">NHÂN SỰ PHÒNG</div>
+            <div class="sub-tab" onclick="subTab('home','album',this)">ALBUM ẢNH</div>
+            <div class="sub-tab" onclick="subTab('home','edit',this)">✏ CHỈNH SỬA</div>
+          </div>
+
+          <!-- Thông tin phòng -->
+          <div id="home-info" class="tab-pane active">
+            <div style="display:flex;align-items:flex-start;gap:18px;padding-bottom:16px;border-bottom:1px solid #f0f0f0;flex-wrap:wrap">
+              <svg width="90" height="90" viewBox="0 0 90 90" style="flex-shrink:0">
+                <rect width="90" height="90" rx="14" fill="#c8102e"/>
+                <rect x="4" y="4" width="82" height="82" rx="11" fill="white"/>
+                <text x="45" y="30" text-anchor="middle" font-size="12" font-weight="900" font-style="italic" fill="#c8102e" font-family="Arial">
+                  <tspan fill="#e8254a">v</tspan><tspan fill="#1e4d8c">t</tspan><tspan fill="#2db34a">v</tspan>
+                </text>
+                <rect x="10" y="35" width="70" height="2" fill="#c8102e" opacity=".4"/>
+                <text x="45" y="52" text-anchor="middle" font-size="7.5" font-weight="800" fill="#1a3a6b" font-family="Arial">BAN VĂN NGHỆ</text>
+                <text x="45" y="66" text-anchor="middle" font-size="6.5" font-weight="700" fill="#c8102e" font-family="Arial">P. SÂN KHẤU TẠP KỸ</text>
+              </svg>
+              <div style="flex:1;min-width:200px">
+                <div style="font-size:20px;font-weight:900;color:var(--red-dark)">PHÒNG SÂN KHẤU TẠP KỸ</div>
+                <div style="font-size:13px;color:var(--blue-dark);font-weight:700;margin-bottom:10px">BAN VĂN NGHỆ – ĐÀI THVN</div>
+                <div style="font-size:12px;color:#555;line-height:1.7">Phòng Sân Khấu Tạp Kỹ thuộc Ban Văn Nghệ VTV, chuyên sản xuất các chương trình nghệ thuật tạp kỹ, xiếc, ảo thuật và các tiết mục biểu diễn sân khấu đặc sắc phục vụ khán giả truyền hình toàn quốc.</div>
+              </div>
+            </div>
+            <div style="margin-top:16px">
+              <div style="font-size:13px;font-weight:800;color:#333;margin-bottom:10px">📌 NHIỆM VỤ CHÍNH</div>
+              <div id="mission-list"></div>
+            </div>
+          </div>
+
+          <!-- Nhân sự -->
+          <div id="home-nhansu" class="tab-pane">
+            <div class="toolbar">
+              <div class="chips" style="margin:0">
+                <span class="chip active" onclick="filterPerson('all',this)">Tất cả</span>
+                <span class="chip" onclick="filterPerson('lanhdao',this)">Lãnh đạo</span>
+                <span class="chip" onclick="filterPerson('bientap',this)">Biên tập</span>
+                <span class="chip" onclick="filterPerson('kythuat',this)">Kỹ thuật</span>
+              </div>
+              <button class="btn btn-red btn-sm" style="margin-left:auto" onclick="toast('Tính năng thêm nhân sự','info')">+ Thêm nhân sự</button>
+            </div>
+            <div id="person-list"></div>
+          </div>
+
+          <!-- Album ảnh -->
+          <div id="home-album" class="tab-pane">
+            <div class="toolbar">
+              <button class="btn btn-red" onclick="triggerUpload()">📤 Tải ảnh lên</button>
+              <button class="btn btn-gray btn-sm" onclick="toggleSelectAll()">☑ Chọn tất cả</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteSelected()">🗑 Xóa đã chọn</button>
+              <button class="btn btn-blue btn-sm" onclick="downloadSelected()">⬇ Tải về</button>
+              <input type="file" id="fileInput" accept="image/*" multiple style="display:none" onchange="handleUpload(event)">
+            </div>
+            <div class="chips" id="album-chips">
+              <span class="chip active" onclick="filterAlbum('all',this)">Tất cả</span>
+              <span class="chip" onclick="filterAlbum('su-kien',this)">Sự kiện</span>
+              <span class="chip" onclick="filterAlbum('hau-truong',this)">Hậu trường</span>
+              <span class="chip" onclick="filterAlbum('bieu-dien',this)">Biểu diễn</span>
+            </div>
+            <div class="photo-grid" id="photo-grid"></div>
+          </div>
+
+          <!-- Chỉnh sửa -->
+          <div id="home-edit" class="tab-pane">
+            <div class="form-section">
+              <div class="form-section-title">✏️ Chỉnh sửa thông tin phòng</div>
+              <div class="form-row"><div class="form-group"><label class="form-label">Tên phòng</label><input class="form-control" value="Phòng Sân Khấu Tạp Kỹ"></div><div class="form-group"><label class="form-label">Ban</label><input class="form-control" value="Ban Văn Nghệ – Đài THVN"></div></div>
+              <div class="form-row full"><div class="form-group"><label class="form-label">Mô tả</label><textarea class="form-control">Phòng Sân Khấu Tạp Kỹ thuộc Ban Văn Nghệ VTV, chuyên sản xuất các chương trình nghệ thuật tạp kỹ, xiếc, ảo thuật...</textarea></div></div>
+              <div class="toolbar"><button class="btn btn-red" onclick="toast('Đã lưu thông tin phòng!','ok')">💾 Lưu thay đổi</button><button class="btn btn-gray">Hủy</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           PAGE: ĐIỂM DANH
+           ==================================================== -->
+      <div id="page-att" class="page">
+        <div class="page-card">
+          <div class="page-hdr hdr-green"><div><h2>✅ ĐIỂM DANH</h2><div class="page-date" id="date-att"></div></div></div>
+          <div class="sub-tabs">
+            <div class="sub-tab active" onclick="subTab('att','today',this)">HÔM NAY</div>
+            <div class="sub-tab" onclick="subTab('att','history',this)">LỊCH SỬ</div>
+            <div class="sub-tab" onclick="subTab('att','stats',this)">THỐNG KÊ</div>
+          </div>
+          <div id="att-today" class="tab-pane active">
+            <div class="stat-grid">
+              <div class="stat-card s-green"><div class="stat-lbl">CÓ MẶT</div><div class="stat-val" id="cnt-p">0</div></div>
+              <div class="stat-card s-red"><div class="stat-lbl">VẮNG MẶT</div><div class="stat-val" id="cnt-a">0</div></div>
+              <div class="stat-card s-orange"><div class="stat-lbl">ĐI MUỘN</div><div class="stat-val" id="cnt-l">0</div></div>
+              <div class="stat-card s-blue"><div class="stat-lbl">TỔNG SỐ</div><div class="stat-val">12</div></div>
+            </div>
+            <div class="export-bar">
+              <span>📤 Xuất:</span>
+              <button class="btn btn-green btn-sm" onclick="exportExcel('diemdanh')">📊 Excel</button>
+              <button class="btn btn-blue btn-sm" onclick="exportWord('Bảng Điểm Danh')">📄 Word</button>
+              <button class="btn btn-orange btn-sm" onclick="window.print()">🖨 In</button>
+            </div>
+            <div class="att-grid" id="att-grid"></div>
+          </div>
+          <div id="att-history" class="tab-pane">
+            <div class="filter-bar">
+              <span class="filter-label">Lọc:</span>
+              <div class="period-grp">
+                <span class="period-btn active" onclick="setPeriod(this)">Tuần</span>
+                <span class="period-btn" onclick="setPeriod(this)">Tháng</span>
+                <span class="period-btn" onclick="setPeriod(this)">Năm</span>
+              </div>
+              <input type="month" class="form-control" style="max-width:150px;padding:5px 10px" value="2026-05">
+            </div>
+            <div class="export-bar">
+              <span>📤 Xuất:</span>
+              <button class="btn btn-green btn-sm" onclick="exportExcel('lich-su-diemdanh')">📊 Excel</button>
+              <button class="btn btn-blue btn-sm" onclick="exportWord('Lịch Sử Điểm Danh')">📄 Word</button>
+            </div>
+            <div class="tbl-wrap"><table class="data-tbl"><thead><tr><th>#</th><th>Họ tên</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>Có mặt</th><th>Vắng</th><th>Muộn</th></tr></thead><tbody id="att-hist-body"></tbody></table></div>
+          </div>
+          <div id="att-stats" class="tab-pane">
+            <div class="filter-bar">
+              <span class="filter-label">Thống kê:</span>
+              <div class="period-grp">
+                <span class="period-btn active" onclick="setPeriod(this)">Tuần</span>
+                <span class="period-btn" onclick="setPeriod(this)">Tháng</span>
+                <span class="period-btn" onclick="setPeriod(this)">Năm</span>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-card s-green"><div class="stat-lbl">TỔNG CÓ MẶT</div><div class="stat-val">48</div></div>
+              <div class="stat-card s-red"><div class="stat-lbl">TỔNG VẮNG</div><div class="stat-val">4</div></div>
+              <div class="stat-card s-orange"><div class="stat-lbl">ĐI MUỘN</div><div class="stat-val">2</div></div>
+              <div class="stat-card s-blue"><div class="stat-lbl">TỈ LỆ CÓ MẶT</div><div class="stat-val">91.7%</div></div>
+            </div>
+            <div class="export-bar">
+              <span>📤 Xuất:</span>
+              <button class="btn btn-green btn-sm" onclick="exportExcel('thongke-diemdanh')">📊 Excel</button>
+              <button class="btn btn-blue btn-sm" onclick="exportWord('Thống Kê Điểm Danh')">📄 Word</button>
+              <button class="btn btn-orange btn-sm" onclick="window.print()">🖨 In</button>
+            </div>
+            <div class="tbl-wrap"><table class="data-tbl"><thead><tr><th>#</th><th>Họ tên</th><th>Chức vụ</th><th>Có mặt</th><th>Vắng</th><th>Muộn</th><th>Tỉ lệ</th></tr></thead><tbody id="att-stats-body"></tbody><tfoot><tr><td colspan="3" style="font-weight:800">TỔNG CỘNG</td><td class="num c-green">54</td><td class="num c-red">5</td><td class="num">1</td><td class="num c-green">90.7%</td></tr></tfoot></table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           PAGE: LỊCH SỬ
+           ==================================================== -->
+      <div id="page-hist" class="page">
+        <div class="page-card">
+          <div class="page-hdr hdr-blue"><div><h2>📋 LỊCH SỬ CỦA TÔI</h2></div></div>
+          <div class="sub-tabs">
+            <div class="sub-tab active" onclick="subTab('hist','myatt',this)">ĐIỂM DANH</div>
+            <div class="sub-tab" onclick="subTab('hist','salary',this)">LƯƠNG / PHỤ CẤP</div>
+            <div class="sub-tab" onclick="subTab('hist','leave',this)">NGHỈ PHÉP</div>
+          </div>
+          <div id="hist-myatt" class="tab-pane active">
+            <div class="stat-grid">
+              <div class="stat-card s-green"><div class="stat-lbl">CÓ MẶT</div><div class="stat-val">22</div></div>
+              <div class="stat-card s-red"><div class="stat-lbl">VẮNG MẶT</div><div class="stat-val">1</div></div>
+              <div class="stat-card s-orange"><div class="stat-lbl">ĐI MUỘN</div><div class="stat-val">0</div></div>
+              <div class="stat-card s-blue"><div class="stat-lbl">TỈ LỆ</div><div class="stat-val">95.7%</div></div>
+            </div>
+            <div class="export-bar">
+              <button class="btn btn-green btn-sm" onclick="exportExcel('lich-su-ca-nhan')">📊 Excel</button>
+              <button class="btn btn-blue btn-sm" onclick="exportWord('Lịch Sử Cá Nhân')">📄 Word</button>
+            </div>
+          </div>
+          <div id="hist-salary" class="tab-pane">
+            <div class="export-bar"><button class="btn btn-green btn-sm" onclick="exportExcel('luong')">📊 Excel</button><button class="btn btn-blue btn-sm" onclick="exportWord('Bảng Lương')">📄 Word</button></div>
+            <div class="tbl-wrap"><table class="data-tbl"><thead><tr><th>Tháng</th><th>Lương CB</th><th>Phụ cấp</th><th>Thưởng</th><th>Khấu trừ</th><th>Thực lĩnh</th></tr></thead><tbody>
+              <tr><td>T5/2026</td><td class="num">15.000.000</td><td class="num">3.000.000</td><td class="num c-green">2.000.000</td><td class="num c-red">-500.000</td><td class="num c-green" style="font-weight:800">19.500.000</td></tr>
+              <tr><td>T4/2026</td><td class="num">15.000.000</td><td class="num">3.000.000</td><td class="num c-green">1.500.000</td><td class="num c-red">-500.000</td><td class="num c-green" style="font-weight:800">19.000.000</td></tr>
+              <tr><td>T3/2026</td><td class="num">15.000.000</td><td class="num">3.000.000</td><td class="num c-green">500.000</td><td class="num c-red">-500.000</td><td class="num c-green" style="font-weight:800">18.000.000</td></tr>
+            </tbody></table></div>
+          </div>
+          <div id="hist-leave" class="tab-pane">
+            <div class="stat-grid">
+              <div class="stat-card s-green"><div class="stat-lbl">PHÉP CÒN LẠI</div><div class="stat-val">10</div></div>
+              <div class="stat-card s-orange"><div class="stat-lbl">ĐÃ DÙNG</div><div class="stat-val">2</div></div>
+              <div class="stat-card s-blue"><div class="stat-lbl">TỔNG NĂM</div><div class="stat-val">12</div></div>
+            </div>
+            <button class="btn btn-red" onclick="toast('Mở form đăng ký nghỉ phép','info')">+ Đăng ký nghỉ phép</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           PAGE: LỊCH SX
+           ==================================================== -->
+      <div id="page-sched" class="page">
+        <div class="page-card">
+          <div class="page-hdr hdr-pink"><div><h2>📺 LỊCH SX & PHÁT SÓNG</h2></div></div>
+          <div class="sub-tabs">
+            <div class="sub-tab active" onclick="subTab('sched','plan',this)">LỊCH SẢN XUẤT</div>
+            <div class="sub-tab" onclick="subTab('sched','air',this)">LỊCH PHÁT SÓNG</div>
+            <div class="sub-tab" onclick="subTab('sched','shows',this)">CHƯƠNG TRÌNH</div>
+          </div>
+          <div id="sched-plan" class="tab-pane active">
+            <div class="toolbar">
+              <div class="period-grp"><span class="period-btn active" onclick="setPeriod(this)">Tuần</span><span class="period-btn" onclick="setPeriod(this)">Tháng</span></div>
+              <input type="week" class="form-control" style="max-width:180px;padding:5px 10px">
+              <button class="btn btn-red btn-sm" style="margin-left:auto" onclick="toast('Thêm lịch sản xuất','info')">+ Thêm lịch</button>
+            </div>
+            <div class="export-bar"><span>📤 Xuất:</span><button class="btn btn-green btn-sm" onclick="exportExcel('lich-sx')">📊 Excel</button><button class="btn btn-blue btn-sm" onclick="exportWord('Lịch Sản Xuất')">📄 Word</button></div>
+            <div class="tbl-wrap"><table class="data-tbl"><thead><tr><th>STT</th><th>Tên chương trình</th><th>Ngày SX</th><th>Địa điểm</th><th>Đạo diễn</th><th>Trạng thái</th><th>Hành động</th></tr></thead><tbody>
+              <tr><td>1</td><td>Tạp kỹ chào xuân 2026</td><td>08/05/2026</td><td>Studio 5</td><td>Nguyễn Anh Tuấn</td><td><span class="badge badge-green">Đang SX</span></td><td><button class="btn btn-orange btn-xs">Sửa</button></td></tr>
+              <tr><td>2</td><td>Xiếc thiếu nhi T5</td><td>10/05/2026</td><td>Nhà hát CQĐT</td><td>Trần Minh Linh</td><td><span class="badge badge-orange">Chuẩn bị</span></td><td><button class="btn btn-orange btn-xs">Sửa</button></td></tr>
+              <tr><td>3</td><td>Ảo thuật đặc biệt</td><td>15/05/2026</td><td>Studio 3</td><td>Nguyễn Anh Tuấn</td><td><span class="badge badge-blue">Lên kế hoạch</span></td><td><button class="btn btn-orange btn-xs">Sửa</button></td></tr>
+            </tbody></table></div>
+          </div>
+          <div id="sched-air" class="tab-pane">
+            <div class="export-bar"><button class="btn btn-green btn-sm" onclick="exportExcel('lich-phatsong')">📊 Excel</button><button class="btn btn-blue btn-sm" onclick="exportWord('Lịch Phát Sóng')">📄 Word</button></div>
+            <div class="tbl-wrap"><table class="data-tbl"><thead><tr><th>STT</th><th>Tên chương trình</th><th>Kênh</th><th>Ngày phát</th><th>Giờ phát</th><th>Thời lượng</th></tr></thead><tbody>
+              <tr><td>1</td><td>Tạp kỹ chào xuân 2026</td><td><span class="badge badge-red">VTV1</span></td><td>20/05/2026</td><td>20:00</td><td>45 phút</td></tr>
+              <tr><td>2</td><td>Xiếc thiếu nhi T5</td><td><span class="badge badge-blue">VTV3</span></td><td>25/05/2026</td><td>18:30</td><td>30 phút</td></tr>
+            </tbody></table></div>
+          </div>
+          <div id="sched-shows" class="tab-pane">
+            <div class="toolbar"><button class="btn btn-red btn-sm" onclick="toast('Thêm chương trình','info')">+ Thêm CT</button></div>
+            <div class="tbl-wrap"><table class="data-tbl"><thead><tr><th>#</th><th>Tên CT</th><th>Thể loại</th><th>Số tập</th><th>Năm SX</th><th>Hành động</th></tr></thead><tbody>
+              <tr><td>1</td><td>Tạp kỹ đặc sắc</td><td>Tạp kỹ</td><td>12</td><td>2026</td><td><button class="btn btn-orange btn-xs">Sửa</button><button class="btn btn-danger btn-xs" style="margin-left:4px">Xóa</button></td></tr>
+              <tr><td>2</td><td>Xiếc thiếu nhi</td><td>Xiếc</td><td>8</td><td>2026</td><td><button class="btn btn-orange btn-xs">Sửa</button><button class="btn btn-danger btn-xs" style="margin-left:4px">Xóa</button></td></tr>
+            </tbody></table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           PAGE: CÔNG ĐOÀN
+           ==================================================== -->
+      <div id="page-union" class="page">
+        <div class="page-card">
+          <div class="page-hdr hdr-purple"><div><h2>💼 CÔNG ĐOÀN PHÒNG</h2></div></div>
+          <div class="sub-tabs">
+            <div class="sub-tab active" onclick="subTab('union','overview',this)">TỔNG QUAN</div>
+            <div class="sub-tab" onclick="subTab('union','input',this)">NHẬP THU/CHI</div>
+            <div class="sub-tab" onclick="subTab('union','stats',this)">THỐNG KÊ</div>
+            <div class="sub-tab" onclick="subTab('union','acts',this)">HOẠT ĐỘNG</div>
+          </div>
+
+          <!-- Tổng quan -->
+          <div id="union-overview" class="tab-pane active">
+            <div class="filter-bar">
+              <span class="filter-label">Xem theo:</span>
+              <div class="period-grp">
+                <span class="period-btn active" onclick="loadUnionStats('week',this)">Tuần</span>
+                <span class="period-btn" onclick="loadUnionStats('month',this)">Tháng</span>
+                <span class="period-btn" onclick="loadUnionStats('year',this)">Năm</span>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-card s-green"><div class="stat-lbl">TỔNG THU</div><div class="stat-val" id="u-thu">4.200.000</div></div>
+              <div class="stat-card s-red"><div class="stat-lbl">TỔNG CHI</div><div class="stat-val" id="u-chi">1.800.000</div></div>
+              <div class="stat-card s-blue"><div class="stat-lbl">TỒN QUỸ</div><div class="stat-val" id="u-ton">2.400.000</div></div>
+              <div class="stat-card s-orange"><div class="stat-lbl">GIAO DỊCH</div><div class="stat-val" id="u-gd">12</div></div>
+            </div>
+            <div class="export-bar">
+              <span>📤 Xuất:</span>
+              <button class="btn btn-green btn-sm" onclick="exportExcel('cong-doan')">📊 Excel</button>
+              <button class="btn btn-blue btn-sm" onclick="exportWord('Báo Cáo Công Đoàn')">📄 Word</button>
+              <button class="btn btn-orange btn-sm" onclick="window.print()">🖨 In</button>
+            </div>
+            <div class="tbl-wrap">
+              <table class="data-tbl">
+                <thead><tr><th>#</th><th>Ngày</th><th>Loại</th><th>Nội dung</th><th>Số tiền (VNĐ)</th><th>Người TH</th><th>Ghi chú</th><th>Sửa</th></tr></thead>
+                <tbody id="union-tbl-body"></tbody>
+                <tfoot><tr><td colspan="4">TỔNG</td><td class="num c-green" id="union-total">+2.400.000</td><td colspan="3"></td></tr></tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Nhập Thu/Chi -->
+          <div id="union-input" class="tab-pane">
+            <div class="form-section">
+              <div class="form-section-title">➕ Nhập giao dịch Thu/Chi quỹ</div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Loại *</label><select class="form-control" id="u-type"><option value="thu">📥 THU</option><option value="chi">📤 CHI</option></select></div>
+                <div class="form-group"><label class="form-label">Ngày *</label><input type="date" class="form-control" id="u-date" value="2026-05-08"></div>
+                <div class="form-group"><label class="form-label">Số tiền (VNĐ) *</label><input type="number" class="form-control" id="u-amount" placeholder="VD: 500000" min="0"></div>
+              </div>
+              <div class="form-row full"><div class="form-group"><label class="form-label">Nội dung *</label><input type="text" class="form-control" id="u-content" placeholder="VD: Đoàn phí tháng 5/2026"></div></div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Người thực hiện</label><select class="form-control" id="u-person"><option>Mc Danh Tung</option><option>Nguyễn Anh Tuấn</option><option>Trần Minh Linh</option></select></div>
+                <div class="form-group"><label class="form-label">Ghi chú</label><input type="text" class="form-control" id="u-note" placeholder="Ghi chú thêm..."></div>
+              </div>
+              <div class="toolbar">
+                <button class="btn btn-red" onclick="saveUnionTx()">💾 Lưu giao dịch</button>
+                <button class="btn btn-gray" onclick="clearUnionForm()">🔄 Nhập lại</button>
+              </div>
+            </div>
+            <div class="form-section">
+              <div class="form-section-title">📝 Giao dịch vừa nhập</div>
+              <div id="recent-tx" style="font-size:12px;color:#999;font-style:italic">Chưa có giao dịch mới.</div>
+            </div>
+          </div>
+
+          <!-- Thống kê -->
+          <div id="union-stats" class="tab-pane">
+            <div class="filter-bar">
+              <span class="filter-label">Thống kê theo:</span>
+              <div class="period-grp">
+                <span class="period-btn active" onclick="setPeriod(this)">Tuần</span>
+                <span class="period-btn" onclick="setPeriod(this)">Tháng</span>
+                <span class="period-btn" onclick="setPeriod(this)">Năm</span>
+              </div>
+              <input type="month" class="form-control" style="max-width:150px;padding:5px 10px" value="2026-05">
+            </div>
+            <div class="stat-grid">
+              <div class="stat-card s-green"><div class="stat-lbl">TỔNG THU</div><div class="stat-val">12.600.000</div></div>
+              <div class="stat-card s-red"><div class="stat-lbl">TỔNG CHI</div><div class="stat-val">5.400.000</div></div>
+              <div class="stat-card s-blue"><div class="stat-lbl">TỒN QUỸ</div><div class="stat-val">7.200.000</div></div>
+              <div class="stat-card s-orange"><div class="stat-lbl">GIAO DỊCH</div><div class="stat-val">36</div></div>
+            </div>
+            <div class="export-bar">
+              <span>📤 Xuất báo cáo:</span>
+              <button class="btn btn-green btn-sm" onclick="exportExcel('tk-congdoan')">📊 Excel</button>
+              <button class="btn btn-blue btn-sm" onclick="exportWord('Thống Kê Công Đoàn')">📄 Word</button>
+              <button class="btn btn-orange btn-sm" onclick="window.print()">🖨 In</button>
+            </div>
+            <div class="tbl-wrap"><table class="data-tbl"><thead><tr><th>Tháng</th><th>Thu (VNĐ)</th><th>Chi (VNĐ)</th><th>Tồn quỹ (VNĐ)</th><th>Giao dịch</th></tr></thead><tbody>
+              <tr><td>T1/2026</td><td class="num c-green">2.400.000</td><td class="num c-red">1.200.000</td><td class="num c-green">1.200.000</td><td class="num">6</td></tr>
+              <tr><td>T2/2026</td><td class="num c-green">2.400.000</td><td class="num c-red">900.000</td><td class="num c-green">2.700.000</td><td class="num">5</td></tr>
+              <tr><td>T3/2026</td><td class="num c-green">2.400.000</td><td class="num c-red">1.500.000</td><td class="num c-green">3.600.000</td><td class="num">8</td></tr>
+              <tr><td>T4/2026</td><td class="num c-green">3.000.000</td><td class="num c-red">1.200.000</td><td class="num c-green">5.400.000</td><td class="num">9</td></tr>
+              <tr><td>T5/2026</td><td class="num c-green">2.400.000</td><td class="num c-red">1.800.000</td><td class="num c-green">6.000.000</td><td class="num">8</td></tr>
+            </tbody><tfoot><tr><td>TỔNG</td><td class="num c-green">12.600.000</td><td class="num c-red">6.600.000</td><td class="num c-green">6.000.000</td><td class="num">36</td></tr></tfoot></table></div>
+          </div>
+
+          <!-- Hoạt động -->
+          <div id="union-acts" class="tab-pane">
+            <div class="toolbar"><button class="btn btn-red btn-sm" onclick="toast('Thêm hoạt động','info')">+ Thêm hoạt động</button></div>
+            <div class="tbl-wrap"><table class="data-tbl"><thead><tr><th>#</th><th>Tên hoạt động</th><th>Ngày</th><th>Địa điểm</th><th>Kinh phí</th><th>Trạng thái</th></tr></thead><tbody>
+              <tr><td>1</td><td>Thể thao chào hè 2026</td><td>20/05/2026</td><td>Sân VTV</td><td class="num">2.000.000</td><td><span class="badge badge-orange">Chuẩn bị</span></td></tr>
+              <tr><td>2</td><td>Thăm quan du lịch Q2</td><td>15/06/2026</td><td>Đà Nẵng</td><td class="num">15.000.000</td><td><span class="badge badge-blue">Lên kế hoạch</span></td></tr>
+            </tbody></table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           PAGE: THÔNG BÁO
+           ==================================================== -->
+      <div id="page-notif" class="page">
+        <div class="page-card">
+          <div class="page-hdr hdr-orange"><div><h2>🔔 QUẢN LÝ THÔNG BÁO</h2></div></div>
+          <div class="sub-tabs">
+            <div class="sub-tab active" onclick="subTab('notif','list',this)">DANH SÁCH</div>
+            <div class="sub-tab" onclick="subTab('notif','new',this)">TẠO MỚI</div>
+          </div>
+          <div id="notif-list" class="tab-pane active">
+            <div class="chips">
+              <span class="chip active">Tất cả</span>
+              <span class="chip">Chưa đọc</span>
+              <span class="chip">Quan trọng</span>
+            </div>
+            <div id="notif-items"></div>
+          </div>
+          <div id="notif-new" class="tab-pane">
+            <div class="form-section">
+              <div class="form-section-title">📝 Tạo thông báo mới</div>
+              <div class="form-row full"><div class="form-group"><label class="form-label">Tiêu đề *</label><input type="text" class="form-control" id="ntitle" placeholder="Nhập tiêu đề thông báo..."></div></div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Mức độ</label><select class="form-control"><option>🔴 Quan trọng</option><option selected>🟡 Thông thường</option><option>🟢 Thông tin</option></select></div>
+                <div class="form-group"><label class="form-label">Đối tượng</label><select class="form-control"><option>Toàn phòng</option><option>Lãnh đạo</option><option>Biên tập</option></select></div>
+              </div>
+              <div class="form-row full"><div class="form-group"><label class="form-label">Nội dung *</label><textarea class="form-control" id="nbody" rows="5" placeholder="Nội dung thông báo..."></textarea></div></div>
+              <div class="toolbar"><button class="btn btn-red" onclick="publishNotif()">📢 Đăng thông báo</button><button class="btn btn-gray">Lưu nháp</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <nav id="mobile-nav">
+    <div class="mn-items">
+      <button class="mn-item active" id="mn-home" onclick="showPage('home');setMN(this)"><span class="mn-icon">🏠</span>TRANG CHỦ</button>
+      <button class="mn-item" id="mn-att" onclick="showPage('att');setMN(this)"><span class="mn-icon">✅</span>ĐIỂM DANH</button>
+      <button class="mn-item" id="mn-hist" onclick="showPage('hist');setMN(this)"><span class="mn-icon">📋</span>LỊCH SỬ</button>
+      <button class="mn-item" id="mn-union" onclick="showPage('union');setMN(this)"><span class="mn-icon">💼</span>CÔNG ĐOÀN</button>
+      <button class="mn-item" id="mn-notif" onclick="showPage('notif');setMN(this)"><span class="mn-icon">🔔</span>THÔNG BÁO</button>
+    </div>
+  </nav>
+</div>
+
+<!-- ============================================================
+     MODALS
+     ============================================================ -->
+
+<!-- Lightbox -->
+<div id="modal-lb" class="modal-overlay" onclick="if(event.target===this)closeModal('lb')">
+  <div class="modal-box" style="min-width:300px;max-width:700px;width:95vw">
+    <div class="modal-hdr"><h3 id="lb-title">Xem ảnh</h3><button class="modal-close" onclick="closeModal('lb')">×</button></div>
+    <div class="modal-body" style="display:flex;align-items:center;justify-content:center;background:#111;min-height:300px">
+      <img id="lb-img" src="" style="max-width:100%;max-height:70vh;object-fit:contain;border-radius:4px" alt="">
+    </div>
+    <div style="padding:10px 16px;display:flex;gap:8px;background:#222;flex-wrap:wrap">
+      <button class="btn btn-orange btn-sm" id="lb-edit-btn">✏ Chỉnh sửa</button>
+      <button class="btn btn-blue btn-sm" id="lb-dl-btn">⬇ Tải về</button>
+      <button class="btn btn-danger btn-sm" id="lb-del-btn">🗑 Xóa</button>
+    </div>
+  </div>
+</div>
+
+<!-- Image Editor -->
+<div id="modal-editor" class="modal-overlay" onclick="if(event.target===this)closeModal('editor')">
+  <div class="modal-box" style="width:min(720px,96vw)">
+    <div class="modal-hdr"><h3>✏️ Chỉnh sửa ảnh</h3><button class="modal-close" onclick="closeModal('editor')">×</button></div>
+    <div style="overflow:auto;max-height:80vh">
+      <div class="editor-toolbar">
+        <button class="btn btn-gray btn-sm" onclick="ea('rotL')">↺ Xoay trái</button>
+        <button class="btn btn-gray btn-sm" onclick="ea('rotR')">↻ Xoay phải</button>
+        <button class="btn btn-gray btn-sm" onclick="ea('flipH')">⇔ Lật ngang</button>
+        <button class="btn btn-gray btn-sm" onclick="ea('flipV')">⇕ Lật dọc</button>
+        <button class="btn btn-gray btn-sm" onclick="ea('zoomIn')">🔍+</button>
+        <button class="btn btn-gray btn-sm" onclick="ea('zoomOut')">🔍−</button>
+        <button class="btn btn-gray btn-sm" onclick="ea('reset')">⟳ Reset</button>
+      </div>
+      <div class="editor-canvas-area" id="editor-wrap">
+        <canvas id="editor-canvas"></canvas>
+      </div>
+      <div class="editor-controls">
+        <div class="slider-group"><span>☀ Sáng:</span><input type="range" min="-100" max="100" value="0" id="sl-bright" oninput="drawEditor()"><span id="sv-bright">0</span></div>
+        <div class="slider-group"><span>◑ Tương phản:</span><input type="range" min="-100" max="100" value="0" id="sl-cont" oninput="drawEditor()"><span id="sv-cont">0</span></div>
+        <div class="slider-group"><span>🌈 Bão hòa:</span><input type="range" min="-100" max="100" value="0" id="sl-sat" oninput="drawEditor()"><span id="sv-sat">0</span></div>
+        <div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-green btn-sm" onclick="saveEdited()">💾 Lưu</button>
+          <button class="btn btn-blue btn-sm" onclick="downloadEdited()">⬇ Tải về</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast-wrap"></div>
+
+<!-- Install Banner -->
+<div id="install-banner">
+  <p><strong>📱 Cài đặt ứng dụng SKTK V12</strong>Thêm vào màn hình chính để dùng offline & nhanh hơn!</p>
+  <button class="btn-install" onclick="installApp()">Cài đặt</button>
+  <button class="btn-dismiss" onclick="dismissInstall()">×</button>
+</div>
+
+<!-- SERVICE WORKER + SCRIPTS -->
+<script src="js/app.js"></script>
+</body>
+</html>
